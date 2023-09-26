@@ -1,0 +1,451 @@
+openapi: '3.0.3'
+
+info:
+  title: IDentigraF Private API
+  description: Face Search and Compare API for [IDentigraF](https://neuro.identigraf.center/) (Private API)
+  version: 2.0.0
+  contact:
+    email: support@myrotvorets.center
+
+servers:
+  - url: /
+    description: Microservice server URL
+
+paths:
+  /compare:
+    post:
+      summary: Upload photos for comparison
+      tags:
+        - IDentigraF Compare API
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                photos:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+                  minItems: 2
+                  maxItems: 11
+              required:
+                - photos
+              additionalProperties: false
+            encoding:
+              photos:
+                contentType: image/jpeg, image/png, image/webp
+      responses:
+        default:
+          $ref: "generic-responses.yaml#/components/responses/error_generic"
+
+        "502":
+          $ref: "generic-responses.yaml#/components/responses/bad-gateway"
+
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              example:
+                success: true
+                guid: "00000000-0000-0000-0000-000000000000"
+              schema:
+                type: object
+                properties:
+                  success:
+                    description: Denotes the successful response
+                    type: boolean
+                    enum: [true]
+                  guid:
+                    description: Operation GUID (to be used with `/compare/{guid}` API)
+                    type: string
+                    pattern: "^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$"
+                required:
+                  - success
+                  - guid
+
+  /compare/{guid}:
+    get:
+      summary: Retrieve comparison results
+      tags:
+        - IDentigraF Compare API
+      parameters:
+        - name: guid
+          description: Operation GUID returned by `/compare` API
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: "^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$"
+      responses:
+        default:
+          $ref: "generic-responses.yaml#/components/responses/error_generic"
+
+        "502":
+          $ref: "generic-responses.yaml#/components/responses/bad-gateway"
+
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              example:
+                success: true
+                status: complete
+                matches:
+                  "1": 97
+                  "2": 93
+              schema:
+                oneOf:
+                  - type: object
+                    description: Comparison is in progress
+                    properties:
+                      success:
+                        type: boolean
+                        enum: [true]
+                      status:
+                        type: string
+                        enum: ['inprogress']
+                    required:
+                      - success
+                      - status
+                  - type: object
+                    description: Comparison completed
+                    properties:
+                      success:
+                        type: boolean
+                        enum: [true]
+                      status:
+                        type: string
+                        enum: ['complete']
+                      matches:
+                        type: object
+                        additionalProperties:
+                          type: number
+                    required:
+                      - success
+                      - status
+                      - matches
+                  - type: object
+                    description: Comparison completed, no faces were recognized, or the photo contained more than one face
+                    properties:
+                      success:
+                        type: boolean
+                        enum: [true]
+                      status:
+                        type: string
+                        enum: ['nofaces']
+                    required:
+                      - success
+                      - status
+
+  /search:
+    post:
+      summary: Upload a photo for search
+      tags:
+        - IDentigraF Search API
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                photo:
+                  type: string
+                  format: binary
+                minSimilarity:
+                  type: number
+                  format: int32
+                  minimum: 0
+                  maximum: 100
+                  default: 30
+              required:
+                - photo
+              additionalProperties: false
+            encoding:
+              photo:
+                contentType: image/jpeg, image/png, image/webp
+      responses:
+        default:
+          $ref: "generic-responses.yaml#/components/responses/error_generic"
+
+        "502":
+          $ref: "generic-responses.yaml#/components/responses/bad-gateway"
+
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              example:
+                success: true
+                guid: "00000000-0000-0000-0000-000000000000"
+              schema:
+                type: object
+                properties:
+                  success:
+                    description: Denotes the successful response
+                    type: boolean
+                    enum: [true]
+                  guid:
+                    description: Operation GUID (to be used with `/search/{guid}` API)
+                    type: string
+                    pattern: "^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$"
+                required:
+                  - success
+                  - guid
+
+  /search/{guid}:
+    get:
+      summary: Retrieve search status and captured faces
+      tags:
+        - IDentigraF Search API
+      parameters:
+        - name: guid
+          description: Operation GUID returned by `/search` API
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: "^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$"
+      responses:
+        default:
+          $ref: "generic-responses.yaml#/components/responses/error_generic"
+
+        "502":
+          $ref: "generic-responses.yaml#/components/responses/bad-gateway"
+
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - type: object
+                    description: Search is in progress
+                    properties:
+                      success:
+                        type: boolean
+                        enum: [true]
+                      status:
+                        type: string
+                        enum: ['inprogress']
+                    required:
+                      - success
+                      - status
+                  - type: object
+                    description: Search completed
+                    properties:
+                      success:
+                        type: boolean
+                        enum: [true]
+                      status:
+                        type: string
+                        enum: ['complete']
+                      stats:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            faceID:
+                              description: FaceX face ID
+                              type: number
+                              format: int32
+                              minimum: 0
+                            count:
+                              description: Number of matches
+                              type: number
+                              format: int32
+                              minimum: 0
+                            confidence:
+                              description: Match confidence
+                              type: number
+                          required:
+                            - faceID
+                            - count
+                            - confidence
+                    required:
+                      - success
+                      - status
+                      - stats
+
+  /search/{guid}/captured:
+    get:
+      summary: Retrieve captured faces
+      tags:
+        - IDentigraF Search API
+      parameters:
+        - name: guid
+          description: Operation GUID returned by `/search` API
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: "^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$"
+      responses:
+        default:
+          $ref: "generic-responses.yaml#/components/responses/error_generic"
+
+        "502":
+          $ref: "generic-responses.yaml#/components/responses/bad-gateway"
+
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    enum: [true]
+                  faces:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        faceID:
+                          description: FaceX face ID
+                          type: number
+                          format: int32
+                          minimum: 0
+                        minSimilarity:
+                          description: Minimum similarity, %
+                          type: number
+                          format: int32
+                          minimum: 0
+                          maximum: 100
+                        maxSimilarity:
+                          description: Maximum similarity, %
+                          type: number
+                          format: int32
+                          minimum: 0
+                          maximum: 100
+                        face:
+                          description: Captured face
+                          type: string
+                          format: byte
+                      required:
+                        - faceID
+                        - minSimilarity
+                        - maxSimilarity
+                        - face
+                required:
+                  - success
+                  - faces
+
+  /search/{guid}/matches/{faceid}/{offset}/{count}:
+    get:
+      summary: Retrieve matched faces
+      tags:
+        - IDentigraF Search API
+      parameters:
+        - name: guid
+          description: Operation GUID returned by `/search` API
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: "^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$"
+        - name: faceid
+          description: Face ID returned by `/search/{guid}`
+          in: path
+          required: true
+          schema:
+            type: number
+            format: int32
+            minimum: 0
+        - name: offset
+          description: Offset for pagination
+          in: path
+          required: true
+          schema:
+            type: number
+            format: int32
+            minimum: 0
+            default: 0
+        - name: count
+          description: Number of returned results
+          in: path
+          required: true
+          schema:
+            type: number
+            format: int32
+            minimum: 1
+            maximum: 100
+            default: 15
+      responses:
+        default:
+          $ref: "generic-responses.yaml#/components/responses/error_generic"
+
+        "502":
+          $ref: "generic-responses.yaml#/components/responses/bad-gateway"
+
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                description: Search completed
+                properties:
+                  success:
+                    type: boolean
+                    enum: [true]
+                  matches:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        similarity:
+                          description: Similarity, %
+                          type: number
+                          format: int32
+                          minimum: 0
+                          maximum: 100
+                        objname:
+                          description: Identifier of the matched object
+                          type: string
+                        face:
+                          description: Matched face
+                          type: string
+                          format: byte
+                      required:
+                        - similarity
+                        - objname
+                        - face
+                required:
+                  - success
+                  - matches
+
+  /count:
+    get:
+      summary: Retrieve the number of faces in the database
+      tags:
+        - IDentigraF Stats API
+      responses:
+        default:
+          $ref: "generic-responses.yaml#/components/responses/error_generic"
+
+        "502":
+          $ref: "generic-responses.yaml#/components/responses/bad-gateway"
+
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    enum: [true]
+                  count:
+                    description: Number of faces in the database
+                    type: number
+                    format: int32
+                    minimum: 0
+                required:
+                  - success
+                  - count

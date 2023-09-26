@@ -1,0 +1,11 @@
+*
+!.npmrc
+!.npmrc.local
+!src
+!package.json
+!package-lock.json
+!tsconfig.json
+!healthcheck.sh
+
+src/**/.git
+*.d.mts
