@@ -8,4 +8,6 @@
 !healthcheck.sh
 
 src/**/.git
+*.d.ts
+*.d.cts
 *.d.mts
