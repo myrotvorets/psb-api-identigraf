@@ -1,0 +1,10 @@
+*
+!.npmrc
+!.npmrc.local
+!src
+!package.json
+!package-lock.json
+!tsconfig.json
+
+src/**/.git
+*.d.ts
