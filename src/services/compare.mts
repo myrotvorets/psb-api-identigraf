@@ -10,6 +10,10 @@ export class CompareService {
     }
 
     public async upload(files: Express.Multer.File[]): Promise<string> {
+        if (!Array.isArray(files)) {
+            throw new TypeError('"files" must be an array');
+        }
+
         if (files.length < 2) {
             throw new Error('Need at least two files');
         }
