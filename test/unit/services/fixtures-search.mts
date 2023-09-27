@@ -66,7 +66,7 @@ export const searchStatusFailed = responseFactory({
         datetime: '27.09.2023 14:40:35',
         result_code: 0,
         results_amount: 0,
-        comment: '',
+        comment: 'error: id absent',
         fotos: [],
     },
 });

@@ -77,6 +77,8 @@ export class SearchService {
             return faces;
         }
 
+        // getCapturedFaces() may return SearchInProgress if called prematurely
+
         throw new FaceXError(response.comment);
     }
 
