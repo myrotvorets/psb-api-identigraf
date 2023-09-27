@@ -1,4 +1,4 @@
-import { PhotoEntry, responseFactory } from '@myrotvorets/facex';
+import { type PhotoEntry, responseFactory } from '@myrotvorets/facex';
 
 export const startCompareAckError = responseFactory({
     ans_type: 16,

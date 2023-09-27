@@ -35,7 +35,7 @@ export class SearchService {
 
     public async upload(file: File, minSimilarity: number): Promise<string> {
         const response = await this.client.uploadPhotoForSearch(
-            file.path ? createReadStream(file.path) : file.buffer,
+            file.path ? /* c8 ignore next */ createReadStream(file.path) : file.buffer,
             undefined,
             undefined,
             minSimilarity * 10,
@@ -84,33 +84,13 @@ export class SearchService {
         const response = await this.client.getMatchedFaces(guid, faceID, offset, count);
         if (!response.isError() && response instanceof MatchedFaces) {
             const faces: MatchedFace[] = [];
-            // FaceX developers break compatibility without any warning :-(
-            // Some faces have the object name in `nameL` field (until resync is completed),
-            // while the others have it in `comment` parameter of `path`
             for (const item of response) {
-                let objName: string;
-                if (
-                    /^\{[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}\}$/u.test(
-                        item.nameL,
-                    )
-                ) {
-                    objName = item.pathParsed[3];
-                } else {
-                    objName = item.nameL;
-                }
-
-                // And there are cases when we have no object information :-(
-                if (!objName) {
-                    objName = `!1-0-${parseInt(item.pathParsed[0].replace(/:/gu, ''), 10)}-0`;
-                }
-
-                objName = objName.replace(/(?:^\{)|(?:\}#?$)/gu, '');
-                faces.push({ similarity: item.similarity, objname: objName, face: item.face });
+                faces.push({ similarity: item.similarity, objname: item.nameL, face: item.face });
             }
 
             return faces;
         }
 
-        throw new FaceXError(response.comment);
+        throw new FaceXError(response.type === 229 ? 'Unknown error' : /* c8 ignore next */ response.comment);
     }
 }

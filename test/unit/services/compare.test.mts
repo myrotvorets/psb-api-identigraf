@@ -3,7 +3,7 @@ import { matchers, when } from 'testdouble';
 import { FaceXError } from '@myrotvorets/facex';
 import { UploadError } from '../../../src/lib/uploaderror.mjs';
 import { CompareService } from '../../../src/services/compare.mjs';
-import { File } from '../../../src/services/types.mjs';
+import type { File } from '../../../src/services/types.mjs';
 import { FakeClient, getComparisonResultsMock, startCompareMock, uploadPhotoForComparisonMock } from './fakeclient.mjs';
 import {
     compareCompletedError,
@@ -20,7 +20,7 @@ import {
     startCompareAckSuccess_raw,
     uploadCompareAckError,
     uploadCompareAckSuccess,
-} from './fixtures.mjs';
+} from './fixtures-compare.mjs';
 
 describe('CompareService', function () {
     let service: CompareService;
@@ -36,11 +36,11 @@ describe('CompareService', function () {
          */
         it('should fail if files is not an array', function () {
             // @ts-expect-error -- we intentionally pass a string instead of an array
-            return expect(service.upload('file')).to.eventually.rejectedWith(TypeError, '"files" must be an array');
+            return expect(service.upload('file')).to.be.eventually.rejectedWith(TypeError, '"files" must be an array');
         });
 
         it('should fail if there are less than two files', function () {
-            return expect(service.upload([])).to.eventually.rejectedWith(Error, 'Need at least two files');
+            return expect(service.upload([])).to.be.eventually.rejectedWith(Error, 'Need at least two files');
         });
 
         it('should throw an UploadError if startCompare fails on the first photo', function () {
@@ -54,7 +54,7 @@ describe('CompareService', function () {
             ];
 
             return expect(service.upload(files))
-                .to.eventually.rejectedWith(UploadError)
+                .to.be.eventually.rejectedWith(UploadError)
                 .that.has.property('file', files[0].originalname);
         });
 
@@ -79,7 +79,7 @@ describe('CompareService', function () {
             ];
 
             return expect(service.upload(files))
-                .to.eventually.rejectedWith(UploadError)
+                .to.be.eventually.rejectedWith(UploadError)
                 .that.has.property('file', files[1].originalname);
         });
 
@@ -112,7 +112,7 @@ describe('CompareService', function () {
             when(getComparisonResultsMock(compareGUID)).thenResolve(compareStatusUnknown);
 
             return expect(service.status(compareGUID))
-                .to.eventually.rejectedWith(FaceXError)
+                .to.be.eventually.rejectedWith(FaceXError)
                 .that.has.property('message', 'Unknown error');
         });
 
@@ -138,7 +138,7 @@ describe('CompareService', function () {
             when(getComparisonResultsMock(compareGUID)).thenResolve(compareCompletedError);
 
             return expect(service.status(compareGUID))
-                .to.eventually.rejectedWith(FaceXError)
+                .to.be.eventually.rejectedWith(FaceXError)
                 .that.has.property('message', compareCompletedErrorComment);
         });
 
