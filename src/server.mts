@@ -37,7 +37,7 @@ export async function configureApp(app: Express): Promise<void> {
             app.get('/', (_req, res) => res.redirect('/swagger/'));
         }
     }
-    /* c8 ignore end */
+    /* c8 ignore stop */
 
     const tempDir = await mkdtemp(join(tmpdir(), 'identigraf-'));
     process.once('exit', () => rmSync(tempDir, { force: true, recursive: true, maxRetries: 3 }));
@@ -95,4 +95,4 @@ export async function run(): Promise<void> {
     const server = await createServer(app);
     server.listen(env.PORT);
 }
-/* c8 ignore end */
+/* c8 ignore stop */

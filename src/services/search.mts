@@ -1,15 +1,16 @@
 import { createReadStream } from 'node:fs';
 import {
     CapturedFaces,
-    Client,
+    type Client,
     FaceXError,
     MatchedFaces,
     SearchCompleted,
     SearchInProgress,
-    SearchStats,
+    type SearchStats,
     SearchUploadAck,
 } from '@myrotvorets/facex';
 import { UploadError } from '../lib/uploaderror.mjs';
+import type { File } from './types.mjs';
 
 export interface RecoginizedFace {
     faceID: number;
@@ -32,7 +33,7 @@ export class SearchService {
         this.client.timeout = 3_600_000;
     }
 
-    public async upload(file: Express.Multer.File, minSimilarity: number): Promise<string> {
+    public async upload(file: File, minSimilarity: number): Promise<string> {
         const response = await this.client.uploadPhotoForSearch(
             file.path ? createReadStream(file.path) : file.buffer,
             undefined,

@@ -13,4 +13,4 @@ const configurator = new OpenTelemetryConfigurator({
 });
 
 configurator.start();
-/* c8 ignore end */
+/* c8 ignore stop */

@@ -1,6 +1,7 @@
 import { createReadStream } from 'node:fs';
-import { Client, CompareCompleted, FaceXError } from '@myrotvorets/facex';
+import { type Client, CompareCompleted, FaceXError } from '@myrotvorets/facex';
 import { UploadError } from '../lib/uploaderror.mjs';
+import type { File } from './types.mjs';
 
 export class CompareService {
     private readonly client: Client;
@@ -9,7 +10,7 @@ export class CompareService {
         this.client = client;
     }
 
-    public async upload(files: Express.Multer.File[]): Promise<string> {
+    public async upload(files: File[]): Promise<string> {
         if (!Array.isArray(files)) {
             throw new TypeError('"files" must be an array');
         }
@@ -19,7 +20,7 @@ export class CompareService {
         }
 
         const startResponse = await this.client.startCompare(
-            files[0].path ? createReadStream(files[0].path) : files[0].buffer,
+            files[0].path ? /* c8 ignore next */ createReadStream(files[0].path) : files[0].buffer,
             files.length - 1,
             '0',
         );
@@ -31,7 +32,7 @@ export class CompareService {
         for (let i = 1; i < files.length; ++i) {
             // eslint-disable-next-line no-await-in-loop
             const uploadResponse = await this.client.uploadPhotoForComparison(
-                files[i].path ? createReadStream(files[i].path) : files[i].buffer,
+                files[i].path ? /* c8 ignore next */ createReadStream(files[i].path) : files[i].buffer,
                 startResponse.serverRequestID,
                 i,
                 files.length - 1,
