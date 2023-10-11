@@ -21,10 +21,9 @@ FROM myrotvorets/node-min@sha256:332a472a75984aa127b313971fc404991e2b8b0757f9229
 USER root
 WORKDIR /srv/service
 RUN chown nobody:nobody /srv/service && apk add --no-cache vips vips-cpp
-COPY healthcheck.sh /usr/local/bin/
-HEALTHCHECK --interval=60s --timeout=10s --start-period=5s --retries=3 CMD ["/usr/local/bin/healthcheck.sh"]
 USER nobody:nobody
 ENTRYPOINT ["/usr/bin/node", "index.mjs"]
 COPY --chown=nobody:nobody ./src/specs ./specs
 COPY --chown=nobody:nobody --from=build /srv/service/dist/ ./
 COPY --chown=nobody:nobody --from=build /srv/service/node_modules ./node_modules
+COPY --chown=nobody:nobody ./package.json ./
