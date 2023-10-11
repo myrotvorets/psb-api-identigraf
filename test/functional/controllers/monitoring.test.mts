@@ -1,15 +1,15 @@
 import { expect } from 'chai';
-import express, { type Express } from 'express';
+import type { Express } from 'express';
 import request from 'supertest';
 import type { HealthChecker } from '@cloudnative/health-connect';
 import { healthChecker, monitoringController } from '../../../src/controllers/monitoring.mjs';
+import { createApp } from '../../../src/server.mjs';
 
 describe('MonitoringController', function () {
     let app: Express;
 
     before(function () {
-        app = express();
-        app.disable('x-powered-by');
+        app = createApp();
         app.use('/monitoring', monitoringController());
     });
 

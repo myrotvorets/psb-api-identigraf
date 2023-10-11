@@ -1,11 +1,12 @@
 import { expect } from 'chai';
-import express, { type Express } from 'express';
+import type { Express } from 'express';
 import request, { type Response as SuperTestResponse } from 'supertest';
 import { errorMiddleware } from '@myrotvorets/express-microservice-middlewares';
 import { BadImageError, BadResponseError, FaceXError, HttpError, NetworkError } from '@myrotvorets/facex';
 import { environment } from '../../../src/lib/environment.mjs';
 import { UploadError } from '../../../src/lib/uploaderror.mjs';
 import { faceXErrorHandlerMiddleware } from '../../../src/middleware/error.mjs';
+import { createApp } from '../../../src/server.mjs';
 
 describe('faceXErrorHandlerMiddleware', function () {
     let app: Express;
@@ -24,8 +25,7 @@ describe('faceXErrorHandlerMiddleware', function () {
 
         environment();
 
-        app = express();
-        app.disable('x-powered-by');
+        app = createApp();
     });
 
     afterEach(function () {

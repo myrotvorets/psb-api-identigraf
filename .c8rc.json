@@ -1,5 +1,4 @@
 {
-    "all": true,
     "extension": [".mts"],
     "reporter": ["text", "lcov"]
 }

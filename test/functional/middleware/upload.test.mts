@@ -1,10 +1,11 @@
 import { expect } from 'chai';
-import express, { type Express } from 'express';
+import type { Express } from 'express';
 import request from 'supertest';
 import { errorMiddleware } from '@myrotvorets/express-microservice-middlewares';
 import { type ErrorCode, MulterError } from 'multer';
 import { uploadErrorHandlerMiddleware } from '../../../src/middleware/upload.mjs';
 import { environment } from '../../../src/lib/environment.mjs';
+import { createApp } from '../../../src/server.mjs';
 
 describe('uploadErrorHandlerMiddleware', function () {
     let app: Express;
@@ -23,8 +24,7 @@ describe('uploadErrorHandlerMiddleware', function () {
 
         environment();
 
-        app = express();
-        app.disable('x-powered-by');
+        app = createApp();
     });
 
     afterEach(function () {
