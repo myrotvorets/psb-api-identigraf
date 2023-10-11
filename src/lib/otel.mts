@@ -2,10 +2,6 @@
 import { ValueType } from '@opentelemetry/api';
 import { OpenTelemetryConfigurator, getExpressInstrumentations } from '@myrotvorets/opentelemetry-configurator';
 
-if (!+(process.env.ENABLE_TRACING || 0)) {
-    process.env.OTEL_SDK_DISABLED = 'true';
-}
-
 export const configurator = new OpenTelemetryConfigurator({
     serviceName: 'psb-api-identigraf',
     instrumentations: [...getExpressInstrumentations()],
