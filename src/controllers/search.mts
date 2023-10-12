@@ -20,7 +20,7 @@ async function startSearchHandler(
     res: Response<StartSearchResponse, LocalsWithContainer>,
 ): Promise<void> {
     const service = res.locals.container.resolve('searchService');
-    const guid = await service.upload((req.files as Express.Multer.File[])[0], req.body.minSimilarity ?? 0);
+    const guid = await service.upload((req.files as Express.Multer.File[])[0]!, req.body.minSimilarity);
     res.json({
         success: true,
         guid,

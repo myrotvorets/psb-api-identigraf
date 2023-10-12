@@ -7,6 +7,9 @@
     "@myrotvorets/myrotvorets-ts",
     "plugin:mocha/recommended"
   ],
+  "rules": {
+    "@typescript-eslint/no-confusing-void-expression": ["error", { "ignoreArrowShorthand": true }]
+  },
   "root": true,
   "env": {
     "es2022": true,

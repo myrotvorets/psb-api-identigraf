@@ -88,9 +88,9 @@ export const searchStatusCompleted = responseFactory({
         comment: 'result ready',
         fotos: [
             {
-                par1: searchStats[0].faceID,
-                par2: searchStats[0].count,
-                par3: searchStats[0].confidence,
+                par1: searchStats[0]!.faceID,
+                par2: searchStats[0]!.count,
+                par3: searchStats[0]!.confidence,
                 foto: null,
                 namef: null,
                 namel: null,
@@ -141,10 +141,10 @@ export const capturedFacesSuccess = responseFactory({
         comment: 'result ready',
         fotos: [
             {
-                par1: recognizedFaces[0].faceID,
-                par2: recognizedFaces[0].minSimilarity,
-                par3: recognizedFaces[0].maxSimilarity,
-                foto: recognizedFaces[0].face,
+                par1: recognizedFaces[0]!.faceID,
+                par2: recognizedFaces[0]!.minSimilarity,
+                par3: recognizedFaces[0]!.maxSimilarity,
+                foto: recognizedFaces[0]!.face,
                 namef: null,
                 namel: null,
                 path: null,
@@ -188,18 +188,18 @@ export const matchedFacesSuccess = responseFactory({
         reqID_clnt: 'c97c4291-ec78-48b7-b050-ad54e12c0047',
         segment: '0',
         datetime: '27.09.2023 17:26:45',
-        result_code: recognizedFaces[0].faceID,
+        result_code: recognizedFaces[0]!.faceID,
         results_amount: 1,
         comment: 'result ready', // the API is weird :-(
         fotos: [
             {
-                par1: recognizedFaces[0].faceID,
+                par1: recognizedFaces[0]!.faceID,
                 par2: 0,
-                par3: matchedFaces[0].similarity,
-                foto: matchedFaces[0].face,
+                par3: matchedFaces[0]!.similarity,
+                foto: matchedFaces[0]!.face,
                 namef: '1-1143762',
-                namel: matchedFaces[0].objname,
-                path: `19:37:b2*${recognizedFaces[0].faceID}*0*`,
+                namel: matchedFaces[0]!.objname,
+                path: `19:37:b2*${recognizedFaces[0]!.faceID}*0*`,
             },
         ],
     },

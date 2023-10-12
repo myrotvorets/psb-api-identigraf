@@ -178,7 +178,7 @@ export const compareCompletedSuccess = responseFactory({
         fotos: [
             {
                 par1: 0,
-                par2: compareCompletedSuccessProcessed['1'],
+                par2: compareCompletedSuccessProcessed['1']!,
                 par3: 0,
                 foto: '',
                 namef: '1',

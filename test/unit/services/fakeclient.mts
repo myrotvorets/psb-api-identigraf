@@ -12,45 +12,47 @@ export const uploadPhotoForComparisonMock = func<typeof FaceXClient.prototype.up
 export const getComparisonResultsMock = func<typeof FaceXClient.prototype.getComparisonResults>();
 
 export class FakeClient extends FaceXClient {
-    public uploadPhotoForSearch(
+    public override uploadPhotoForSearch(
         ...params: Parameters<typeof uploadPhotoForSearchMock>
     ): ReturnType<typeof uploadPhotoForSearchMock> {
         return uploadPhotoForSearchMock(...params);
     }
 
-    public checkSearchStatus(
+    public override checkSearchStatus(
         ...params: Parameters<typeof checkSearchStatusMock>
     ): ReturnType<typeof checkSearchStatusMock> {
         return checkSearchStatusMock(...params);
     }
 
-    public getCapturedFaces(
+    public override getCapturedFaces(
         ...params: Parameters<typeof getCapturedFacesMock>
     ): ReturnType<typeof getCapturedFacesMock> {
         return getCapturedFacesMock(...params);
     }
 
-    public getRecognitionStats(
+    public override getRecognitionStats(
         ...params: Parameters<typeof getRecognitionStatsMock>
     ): ReturnType<typeof getRecognitionStatsMock> {
         return getRecognitionStatsMock(...params);
     }
 
-    public getMatchedFaces(...params: Parameters<typeof getMatchedFacesMock>): ReturnType<typeof getMatchedFacesMock> {
+    public override getMatchedFaces(
+        ...params: Parameters<typeof getMatchedFacesMock>
+    ): ReturnType<typeof getMatchedFacesMock> {
         return getMatchedFacesMock(...params);
     }
 
-    public startCompare(...params: Parameters<typeof startCompareMock>): ReturnType<typeof startCompareMock> {
+    public override startCompare(...params: Parameters<typeof startCompareMock>): ReturnType<typeof startCompareMock> {
         return startCompareMock(...params);
     }
 
-    public uploadPhotoForComparison(
+    public override uploadPhotoForComparison(
         ...params: Parameters<typeof uploadPhotoForComparisonMock>
     ): ReturnType<typeof uploadPhotoForComparisonMock> {
         return uploadPhotoForComparisonMock(...params);
     }
 
-    public getComparisonResults(
+    public override getComparisonResults(
         ...params: Parameters<typeof getComparisonResultsMock>
     ): ReturnType<typeof getComparisonResultsMock> {
         return getComparisonResultsMock(...params);

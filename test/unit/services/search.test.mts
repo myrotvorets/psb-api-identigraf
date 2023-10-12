@@ -112,19 +112,19 @@ describe('SearchService', function () {
 
     describe('#matchedFaces', function () {
         it('should throw FaceXError on failure', function () {
-            when(getMatchedFacesMock(matchedFacesError.serverRequestID, recognizedFaces[0].faceID, 0, 1)).thenResolve(
+            when(getMatchedFacesMock(matchedFacesError.serverRequestID, recognizedFaces[0]!.faceID, 0, 1)).thenResolve(
                 matchedFacesError,
             );
 
             return expect(
-                service.matchedFaces(matchedFacesError.serverRequestID, recognizedFaces[0].faceID, 0, 1),
+                service.matchedFaces(matchedFacesError.serverRequestID, recognizedFaces[0]!.faceID, 0, 1),
             ).to.be.eventually.rejectedWith(FaceXError);
         });
 
         it('should return matches on success', function () {
-            when(getMatchedFacesMock(searchGUID, recognizedFaces[0].faceID, 0, 1)).thenResolve(matchedFacesSuccess);
+            when(getMatchedFacesMock(searchGUID, recognizedFaces[0]!.faceID, 0, 1)).thenResolve(matchedFacesSuccess);
 
-            return expect(service.matchedFaces(searchGUID, recognizedFaces[0].faceID, 0, 1)).to.become(matchedFaces);
+            return expect(service.matchedFaces(searchGUID, recognizedFaces[0]!.faceID, 0, 1)).to.become(matchedFaces);
         });
     });
 });

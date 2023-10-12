@@ -19,20 +19,22 @@ export class CompareService {
             throw new Error('Need at least two files');
         }
 
+        const ref = files[0]!;
         const startResponse = await this.client.startCompare(
-            files[0].path ? /* c8 ignore next */ createReadStream(files[0].path) : files[0].buffer,
+            ref.path ? /* c8 ignore next */ createReadStream(ref.path) : ref.buffer,
             files.length - 1,
             '0',
         );
 
         if (startResponse.isError()) {
-            throw new UploadError(startResponse.comment, files[0].originalname);
+            throw new UploadError(startResponse.comment, ref.originalname);
         }
 
         for (let i = 1; i < files.length; ++i) {
+            const file = files[i]!;
             // eslint-disable-next-line no-await-in-loop
             const uploadResponse = await this.client.uploadPhotoForComparison(
-                files[i].path ? /* c8 ignore next */ createReadStream(files[i].path) : files[i].buffer,
+                file.path ? /* c8 ignore next */ createReadStream(file.path) : file.buffer,
                 startResponse.serverRequestID,
                 i,
                 files.length - 1,
@@ -40,7 +42,7 @@ export class CompareService {
             );
 
             if (uploadResponse.isError()) {
-                throw new UploadError(uploadResponse.comment, files[i].originalname);
+                throw new UploadError(uploadResponse.comment, file.originalname);
             }
         }
 

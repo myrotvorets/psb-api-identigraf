@@ -55,7 +55,7 @@ describe('CompareService', function () {
 
             return expect(service.upload(files))
                 .to.be.eventually.rejectedWith(UploadError)
-                .that.has.property('file', files[0].originalname);
+                .that.has.property('file', files[0]!.originalname);
         });
 
         it('should throw an UploadError if startCompare fails on subsequent photos', function () {
@@ -80,7 +80,7 @@ describe('CompareService', function () {
 
             return expect(service.upload(files))
                 .to.be.eventually.rejectedWith(UploadError)
-                .that.has.property('file', files[1].originalname);
+                .that.has.property('file', files[1]!.originalname);
         });
 
         it('should succeed if everything is OK', function () {
