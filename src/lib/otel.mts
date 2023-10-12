@@ -7,11 +7,12 @@ export const configurator = new OpenTelemetryConfigurator({
     instrumentations: [...getExpressInstrumentations()],
 });
 
+configurator.start();
+
 export const requestDurationHistogram = configurator.meter().createHistogram('psbapi.request.duration', {
     description: 'Measures the duration of requests.',
     unit: 'ms',
     valueType: ValueType.DOUBLE,
 });
 
-configurator.start();
 /* c8 ignore stop */
