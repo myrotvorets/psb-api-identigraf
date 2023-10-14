@@ -21,7 +21,7 @@ async function countHandler(
 }
 
 export function countController(): Router {
-    const router = Router();
+    const router = Router({ strict: true, caseSensitive: true });
     router.get('/count', asyncWrapperMiddleware(countHandler));
     router.use(faceXErrorHandlerMiddleware);
     return router;

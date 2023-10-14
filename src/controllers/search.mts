@@ -1,4 +1,4 @@
-import { type Request, type Response, Router } from 'express';
+import { type NextFunction, type Request, type Response, Router } from 'express';
 import type { SearchStats } from '@myrotvorets/facex';
 import { asyncWrapperMiddleware } from '@myrotvorets/express-async-middleware-wrapper';
 import type { MatchedFace, RecoginizedFace } from '../services/search.mjs';
@@ -73,9 +73,9 @@ async function capturedFacesHandler(
 
 interface MatchedFacesParams {
     guid: string;
-    faceid: string;
-    offset: string;
-    count: string;
+    faceid: number;
+    offset: number;
+    count: number;
 }
 
 interface MatchedFacesResponse {
@@ -87,23 +87,34 @@ async function matchedFacesHandler(
     req: Request<MatchedFacesParams, MatchedFacesResponse, never, never, LocalsWithContainer>,
     res: Response<MatchedFacesResponse, LocalsWithContainer>,
 ): Promise<void> {
-    const { guid } = req.params;
+    const { guid, faceid, offset, count } = req.params;
     const service = res.locals.container.resolve('searchService');
-    const faceid = parseInt(req.params.faceid, 10);
-    const offset = parseInt(req.params.offset, 10);
-    const count = parseInt(req.params.count, 10);
     const result = await service.matchedFaces(guid, faceid, offset, count);
     res.json({ success: true, matches: result });
 }
 
+function intParamHandler(
+    req: Request<Record<string, unknown>>,
+    _res: Response,
+    next: NextFunction,
+    value: string,
+    name: string,
+): void {
+    req.params[name] = +value;
+    next();
+}
+
 export function searchController(): Router {
-    const router = Router();
-    const guid = '[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}';
+    const router = Router({ strict: true, caseSensitive: true });
+
+    router.param('offset', intParamHandler);
+    router.param('count', intParamHandler);
+    router.param('faceid', intParamHandler);
 
     router.post('/search', asyncWrapperMiddleware(startSearchHandler));
-    router.get(`/search/:guid(${guid})`, asyncWrapperMiddleware(statusHandler));
-    router.get(`/search/:guid(${guid})/captured`, asyncWrapperMiddleware(capturedFacesHandler));
-    router.get(`/search/:guid(${guid})/matches/:faceid/:offset/:count`, asyncWrapperMiddleware(matchedFacesHandler));
+    router.get(`/search/:guid`, asyncWrapperMiddleware(statusHandler));
+    router.get(`/search/:guid/captured`, asyncWrapperMiddleware(capturedFacesHandler));
+    router.get(`/search/:guid/matches/:faceid/:offset/:count`, asyncWrapperMiddleware(matchedFacesHandler));
 
     router.use(uploadErrorHandlerMiddleware);
     router.use(faceXErrorHandlerMiddleware);

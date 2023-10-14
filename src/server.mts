@@ -7,9 +7,10 @@ import express, { type Express } from 'express';
 import { cleanUploadedFilesMiddleware } from '@myrotvorets/clean-up-after-multer';
 import { errorMiddleware, notFoundMiddleware } from '@myrotvorets/express-microservice-middlewares';
 import { installOpenApiValidator } from '@myrotvorets/oav-installer';
-
 import { createServer, getTracer, recordErrorToSpan } from '@myrotvorets/otel-utils';
+
 import { initializeContainer, scopedContainerMiddleware } from './lib/container.mjs';
+import { initAsyncMetrics } from './lib/metrics.mjs';
 
 import { requestDurationMiddleware } from './middleware/duration.mjs';
 import { loggerMiddleware } from './middleware/logger.mjs';
@@ -58,6 +59,7 @@ export function configureApp(app: Express): Promise<ReturnType<typeof initialize
                     errorMiddleware,
                 );
 
+                initAsyncMetrics(container.cradle);
                 return container;
             } /* c8 ignore start */ catch (e) {
                 recordErrorToSpan(e, span);

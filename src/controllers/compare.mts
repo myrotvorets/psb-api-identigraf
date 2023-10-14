@@ -57,13 +57,10 @@ async function statusHandler(
 }
 
 export function compareController(): Router {
-    const router = Router();
+    const router = Router({ strict: true, caseSensitive: true });
 
     router.post('/compare', asyncWrapperMiddleware(startCompareHandler));
-    router.get(
-        '/compare/:guid([a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12})',
-        asyncWrapperMiddleware(statusHandler),
-    );
+    router.get('/compare/:guid', asyncWrapperMiddleware(statusHandler));
 
     router.use(uploadErrorHandlerMiddleware);
     router.use(faceXErrorHandlerMiddleware);
