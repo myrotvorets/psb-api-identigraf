@@ -5,13 +5,11 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import express, { type Express } from 'express';
 import { cleanUploadedFilesMiddleware } from '@myrotvorets/clean-up-after-multer';
-import { createServer } from '@myrotvorets/create-server';
 import { errorMiddleware, notFoundMiddleware } from '@myrotvorets/express-microservice-middlewares';
 import { installOpenApiValidator } from '@myrotvorets/oav-installer';
-import { recordErrorToSpan } from '@myrotvorets/opentelemetry-configurator';
 
+import { createServer, getTracer, recordErrorToSpan } from '@myrotvorets/otel-utils';
 import { initializeContainer, scopedContainerMiddleware } from './lib/container.mjs';
-import { configurator } from './lib/otel.mjs';
 
 import { requestDurationMiddleware } from './middleware/duration.mjs';
 import { loggerMiddleware } from './middleware/logger.mjs';
@@ -23,9 +21,9 @@ import { countController } from './controllers/count.mjs';
 import { monitoringController } from './controllers/monitoring.mjs';
 
 export function configureApp(app: Express): Promise<ReturnType<typeof initializeContainer>> {
-    return configurator
-        .tracer()
-        .startActiveSpan('configureApp', async (span): Promise<ReturnType<typeof initializeContainer>> => {
+    return getTracer().startActiveSpan(
+        'configureApp',
+        async (span): Promise<ReturnType<typeof initializeContainer>> => {
             try {
                 const container = initializeContainer();
                 const env = container.resolve('environment');
@@ -67,7 +65,8 @@ export function configureApp(app: Express): Promise<ReturnType<typeof initialize
             } /* c8 ignore stop */ finally {
                 span.end();
             }
-        });
+        },
+    );
 }
 
 export function createApp(): Express {

@@ -1,18 +1,18 @@
 import { AwilixContainer, asFunction, asValue, createContainer } from 'awilix';
 import type { NextFunction, Request, Response } from 'express';
+import { type Logger, type Meter, getLogger, getMeter } from '@myrotvorets/otel-utils';
 import { FaceXClient } from '@myrotvorets/facex';
 import { CompareService } from '../services/compare.mjs';
 import { SearchService } from '../services/search.mjs';
 import { environment } from './environment.mjs';
-import { configurator } from './otel.mjs';
 
 export interface Container {
     faceXClient: FaceXClient;
     compareService: CompareService;
     searchService: SearchService;
     environment: ReturnType<typeof environment>;
-    logger: ReturnType<(typeof configurator)['logger']>;
-    meter: ReturnType<(typeof configurator)['meter']>;
+    logger: Logger;
+    meter: Meter;
 }
 
 export interface RequestContainer {
@@ -25,16 +25,16 @@ function createEnvironment(): ReturnType<typeof environment> {
     return environment(true);
 }
 
-function createLogger({ req }: RequestContainer): ReturnType<(typeof configurator)['logger']> {
-    const logger = configurator.logger();
+function createLogger({ req }: RequestContainer): Logger {
+    const logger = getLogger();
     logger.clearAttributes();
     logger.setAttribute('ip', req.ip);
     logger.setAttribute('request', `${req.method} ${req.url}`);
     return logger;
 }
 
-function createMeter(): ReturnType<(typeof configurator)['meter']> {
-    return configurator.meter();
+function createMeter(): Meter {
+    return getMeter();
 }
 
 function createFaceXClient({ environment }: Container): FaceXClient {
