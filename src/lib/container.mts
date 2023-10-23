@@ -28,7 +28,10 @@ function createEnvironment(): ReturnType<typeof environment> {
 function createLogger({ req }: RequestContainer): Logger {
     const logger = getLogger();
     logger.clearAttributes();
-    logger.setAttribute('ip', req.ip);
+    if (req.ip) {
+        logger.setAttribute('ip', req.ip);
+    }
+
     logger.setAttribute('request', `${req.method} ${req.url}`);
     return logger;
 }
