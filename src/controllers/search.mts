@@ -101,10 +101,10 @@ export function searchController(): Router {
     router.param('count', numberParamHandler);
     router.param('faceid', numberParamHandler);
 
-    router.post('/search', asyncWrapperMiddleware(startSearchHandler));
     router.get(`/search/:guid`, asyncWrapperMiddleware(statusHandler));
     router.get(`/search/:guid/captured`, asyncWrapperMiddleware(capturedFacesHandler));
     router.get(`/search/:guid/matches/:faceid/:offset/:count`, asyncWrapperMiddleware(matchedFacesHandler));
+    router.post('/search', asyncWrapperMiddleware(startSearchHandler));
 
     router.use(uploadErrorHandlerMiddleware);
     router.use(faceXErrorHandlerMiddleware);

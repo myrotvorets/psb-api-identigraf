@@ -59,8 +59,8 @@ async function statusHandler(
 export function compareController(): Router {
     const router = Router({ strict: true, caseSensitive: true });
 
-    router.post('/compare', asyncWrapperMiddleware(startCompareHandler));
     router.get('/compare/:guid', asyncWrapperMiddleware(statusHandler));
+    router.post('/compare', asyncWrapperMiddleware(startCompareHandler));
 
     router.use(uploadErrorHandlerMiddleware);
     router.use(faceXErrorHandlerMiddleware);
