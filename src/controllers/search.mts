@@ -1,6 +1,7 @@
-import { type NextFunction, type Request, type Response, Router } from 'express';
+import { type Request, type Response, Router } from 'express';
 import type { SearchStats } from '@myrotvorets/facex';
 import { asyncWrapperMiddleware } from '@myrotvorets/express-async-middleware-wrapper';
+import { numberParamHandler } from '@myrotvorets/express-microservice-middlewares';
 import type { MatchedFace, RecoginizedFace } from '../services/search.mjs';
 import { uploadErrorHandlerMiddleware } from '../middleware/upload.mjs';
 import { faceXErrorHandlerMiddleware } from '../middleware/error.mjs';
@@ -93,23 +94,12 @@ async function matchedFacesHandler(
     res.json({ success: true, matches: result });
 }
 
-function intParamHandler(
-    req: Request<Record<string, unknown>>,
-    _res: Response,
-    next: NextFunction,
-    value: string,
-    name: string,
-): void {
-    req.params[name] = +value;
-    next();
-}
-
 export function searchController(): Router {
     const router = Router({ strict: true, caseSensitive: true });
 
-    router.param('offset', intParamHandler);
-    router.param('count', intParamHandler);
-    router.param('faceid', intParamHandler);
+    router.param('offset', numberParamHandler);
+    router.param('count', numberParamHandler);
+    router.param('faceid', numberParamHandler);
 
     router.post('/search', asyncWrapperMiddleware(startSearchHandler));
     router.get(`/search/:guid`, asyncWrapperMiddleware(statusHandler));
