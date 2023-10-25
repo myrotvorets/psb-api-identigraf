@@ -66,21 +66,21 @@ describe('faceXErrorHandlerMiddleware', function () {
         app.use('/', (_req, _res, next) => next(new HttpError({ status: 418, statusText: "I'm a teapot" })));
         app.use(faceXErrorHandlerMiddleware);
         app.use(errorMiddleware);
-        return request(app).get('/').expect(502).expect('Content-Type', /json/u).expect(expectBadGateway);
+        return request(app).get('/').expect(500).expect('Content-Type', /json/u).expect(expectBadGateway);
     });
 
     it('should catch FaceX NetworkError', function () {
         app.use('/', (_req, _res, next) => next(new NetworkError('Boom-boom bye-bye')));
         app.use(faceXErrorHandlerMiddleware);
         app.use(errorMiddleware);
-        return request(app).get('/').expect(502).expect('Content-Type', /json/u).expect(expectBadGateway);
+        return request(app).get('/').expect(500).expect('Content-Type', /json/u).expect(expectBadGateway);
     });
 
     it('should catch FaceX BadResponseError', function () {
         app.use('/', (_req, _res, next) => next(new BadResponseError('Boom-boom bye-bye')));
         app.use(faceXErrorHandlerMiddleware);
         app.use(errorMiddleware);
-        return request(app).get('/').expect(502).expect('Content-Type', /json/u).expect(expectBadGateway);
+        return request(app).get('/').expect(500).expect('Content-Type', /json/u).expect(expectBadGateway);
     });
 
     it('should catch FaceXError', function () {
@@ -89,7 +89,7 @@ describe('faceXErrorHandlerMiddleware', function () {
         app.use(errorMiddleware);
         return request(app)
             .get('/')
-            .expect(502)
+            .expect(500)
             .expect('Content-Type', /json/u)
             .expect((res) => expectError(res, 'FACEX_ERROR', 502));
     });

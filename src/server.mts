@@ -37,19 +37,18 @@ export function configureApp(app: Express): Promise<ReturnType<typeof initialize
 
                 app.use('/monitoring', monitoringController());
 
-                await installOpenApiValidator(join(base, 'specs', 'identigraf-private.yaml'), app, env.NODE_ENV, {
-                    validateRequests: {
-                        coerceTypes: true,
-                    },
-                    fileUploader: {
-                        dest: tempDir,
-                        limits: {
-                            fileSize: env.IDENTIGRAF_MAX_FILE_SIZE,
-                        },
-                    },
-                });
-
                 app.use(
+                    installOpenApiValidator(join(base, 'specs', 'identigraf-private.yaml'), env.NODE_ENV, {
+                        validateRequests: {
+                            coerceTypes: true,
+                        },
+                        fileUploader: {
+                            dest: tempDir,
+                            limits: {
+                                fileSize: env.IDENTIGRAF_MAX_FILE_SIZE,
+                            },
+                        },
+                    }),
                     countController(),
                     compareController(),
                     searchController(),
@@ -74,6 +73,7 @@ export function configureApp(app: Express): Promise<ReturnType<typeof initialize
 export function createApp(): Express {
     const app = express();
     app.set('strict routing', true);
+    app.set('case sensitive routing', true);
     app.set('x-powered-by', false);
     app.set('trust proxy', true);
     return app;
