@@ -31,7 +31,7 @@ export function configureApp(app: Express): Promise<ReturnType<typeof initialize
                 const base = dirname(fileURLToPath(import.meta.url));
 
                 const tempDir = await mkdtemp(join(tmpdir(), 'identigraf-'));
-                process.once('exit', () => rmSync(tempDir, { force: true, recursive: true, maxRetries: 3 }));
+                process.once('beforeExit', () => rmSync(tempDir, { force: true, recursive: true, maxRetries: 3 }));
 
                 app.use(requestDurationMiddleware, scopedContainerMiddleware, loggerMiddleware);
 
@@ -81,9 +81,6 @@ export function createApp(): Express {
 
 export async function run(): Promise<void> {
     const app = createApp();
-    const container = await configureApp(app);
-    const env = container.resolve('environment');
-
-    const server = await createServer(app);
-    server.listen(env.PORT);
+    await configureApp(app);
+    await createServer(app);
 }
