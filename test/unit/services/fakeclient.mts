@@ -1,15 +1,14 @@
-/* eslint-disable class-methods-use-this */
+import { mock } from 'node:test';
 import { FaceXClient } from '@myrotvorets/facex';
-import { func } from 'testdouble';
 
-export const uploadPhotoForSearchMock = func<typeof FaceXClient.prototype.uploadPhotoForSearch>();
-export const checkSearchStatusMock = func<typeof FaceXClient.prototype.checkSearchStatus>();
-export const getCapturedFacesMock = func<typeof FaceXClient.prototype.getCapturedFaces>();
-export const getRecognitionStatsMock = func<typeof FaceXClient.prototype.getRecognitionStats>();
-export const getMatchedFacesMock = func<typeof FaceXClient.prototype.getMatchedFaces>();
-export const startCompareMock = func<typeof FaceXClient.prototype.startCompare>();
-export const uploadPhotoForComparisonMock = func<typeof FaceXClient.prototype.uploadPhotoForComparison>();
-export const getComparisonResultsMock = func<typeof FaceXClient.prototype.getComparisonResults>();
+export const uploadPhotoForSearchMock = mock.fn<typeof FaceXClient.prototype.uploadPhotoForSearch>();
+export const checkSearchStatusMock = mock.fn<typeof FaceXClient.prototype.checkSearchStatus>();
+export const getCapturedFacesMock = mock.fn<typeof FaceXClient.prototype.getCapturedFaces>();
+export const getRecognitionStatsMock = mock.fn<typeof FaceXClient.prototype.getRecognitionStats>();
+export const getMatchedFacesMock = mock.fn<typeof FaceXClient.prototype.getMatchedFaces>();
+export const startCompareMock = mock.fn<typeof FaceXClient.prototype.startCompare>();
+export const uploadPhotoForComparisonMock = mock.fn<typeof FaceXClient.prototype.uploadPhotoForComparison>();
+export const getComparisonResultsMock = mock.fn<typeof FaceXClient.prototype.getComparisonResults>();
 
 export class FakeClient extends FaceXClient {
     public override uploadPhotoForSearch(

@@ -1,5 +1,4 @@
 import { expect } from 'chai';
-import { matchers, when } from 'testdouble';
 import { FaceXError } from '@myrotvorets/facex';
 import { UploadError } from '../../../src/lib/uploaderror.mjs';
 import { CompareService } from '../../../src/services/compare.mjs';
@@ -44,9 +43,7 @@ describe('CompareService', function () {
         });
 
         it('should throw an UploadError if startCompare fails on the first photo', function () {
-            when(startCompareMock(matchers.anything() as Parameters<typeof startCompareMock>[0], 1, '0')).thenResolve(
-                startCompareAckError,
-            );
+            startCompareMock.mock.mockImplementationOnce(() => startCompareAckError);
 
             const files: File[] = [
                 { originalname: 'file1', buffer: Buffer.from(''), path: '' },
@@ -59,19 +56,8 @@ describe('CompareService', function () {
         });
 
         it('should throw an UploadError if startCompare fails on subsequent photos', function () {
-            when(startCompareMock(matchers.anything() as Parameters<typeof startCompareMock>[0], 1, '0')).thenResolve(
-                startCompareAckSuccess,
-            );
-
-            when(
-                uploadPhotoForComparisonMock(
-                    matchers.anything() as Parameters<typeof uploadPhotoForComparisonMock>[0],
-                    startCompareAckSuccess_raw.data.reqID_serv,
-                    1,
-                    1,
-                    '1',
-                ),
-            ).thenResolve(uploadCompareAckError);
+            startCompareMock.mock.mockImplementationOnce(() => startCompareAckSuccess);
+            uploadPhotoForComparisonMock.mock.mockImplementationOnce(() => uploadCompareAckError);
 
             const files: File[] = [
                 { originalname: 'file1', buffer: Buffer.from(''), path: '' },
@@ -84,19 +70,8 @@ describe('CompareService', function () {
         });
 
         it('should succeed if everything is OK', function () {
-            when(startCompareMock(matchers.anything() as Parameters<typeof startCompareMock>[0], 1, '0')).thenResolve(
-                startCompareAckSuccess,
-            );
-
-            when(
-                uploadPhotoForComparisonMock(
-                    matchers.anything() as Parameters<typeof uploadPhotoForComparisonMock>[0],
-                    startCompareAckSuccess_raw.data.reqID_serv,
-                    1,
-                    1,
-                    '1',
-                ),
-            ).thenResolve(uploadCompareAckSuccess);
+            startCompareMock.mock.mockImplementationOnce(() => startCompareAckSuccess);
+            uploadPhotoForComparisonMock.mock.mockImplementationOnce(() => uploadCompareAckSuccess);
 
             const files: File[] = [
                 { originalname: 'file1', buffer: Buffer.from(''), path: '' },
@@ -109,42 +84,36 @@ describe('CompareService', function () {
 
     describe('#status', function () {
         it('should fail on unexpected response', function () {
-            when(getComparisonResultsMock(compareGUID)).thenResolve(compareStatusUnknown);
-
+            getComparisonResultsMock.mock.mockImplementationOnce(() => compareStatusUnknown);
             return expect(service.status(compareGUID))
                 .to.be.eventually.rejectedWith(FaceXError)
                 .that.has.property('message', 'Unknown error');
         });
 
         it('should return false if the comparison is in progress', function () {
-            when(getComparisonResultsMock(compareGUID)).thenResolve(compareCompletedPending);
-
+            getComparisonResultsMock.mock.mockImplementationOnce(() => compareCompletedPending);
             return expect(service.status(compareGUID)).to.become(false);
         });
 
         it('should return null if no faces were recognized', function () {
-            when(getComparisonResultsMock(compareGUID)).thenResolve(compareCompletedNotRecognized);
-
+            getComparisonResultsMock.mock.mockImplementationOnce(() => compareCompletedNotRecognized);
             return expect(service.status(compareGUID)).to.become(null);
         });
 
         it('should return an empty object if there are not matches', function () {
-            when(getComparisonResultsMock(compareGUID)).thenResolve(compareCompletedNoMatches);
-
+            getComparisonResultsMock.mock.mockImplementationOnce(() => compareCompletedNoMatches);
             return expect(service.status(compareGUID)).to.eventually.be.an('object').that.is.empty;
         });
 
         it('should fail on other error', function () {
-            when(getComparisonResultsMock(compareGUID)).thenResolve(compareCompletedError);
-
+            getComparisonResultsMock.mock.mockImplementationOnce(() => compareCompletedError);
             return expect(service.status(compareGUID))
                 .to.be.eventually.rejectedWith(FaceXError)
                 .that.has.property('message', compareCompletedErrorComment);
         });
 
         it('should succeed if everything goes well', function () {
-            when(getComparisonResultsMock(compareGUID)).thenResolve(compareCompletedSuccess);
-
+            getComparisonResultsMock.mock.mockImplementationOnce(() => compareCompletedSuccess);
             return expect(service.status(compareGUID)).to.become(compareCompletedSuccessProcessed);
         });
     });
