@@ -81,6 +81,9 @@ export function createApp(): Express {
 
 export async function run(): Promise<void> {
     const app = createApp();
-    await configureApp(app);
-    await createServer(app);
+    const container = await configureApp(app);
+    const server = await createServer(app);
+    server.on('close', () => {
+        container.dispose().catch((e) => console.error(e));
+    });
 }
