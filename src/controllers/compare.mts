@@ -1,7 +1,7 @@
 import { type Request, type Response, Router } from 'express';
 import { asyncWrapperMiddleware } from '@myrotvorets/express-async-middleware-wrapper';
 import { uploadErrorHandlerMiddleware } from '../middleware/upload.mjs';
-import { faceXErrorHandlerMiddleware } from '../middleware/error.mjs';
+import { faceXErrorHandlerMiddleware, faceXErrorLoggerMiddleware } from '../middleware/error.mjs';
 import type { LocalsWithContainer } from '../lib/container.mjs';
 
 interface StartCompareResponse {
@@ -62,8 +62,7 @@ export function compareController(): Router {
     router.get('/compare/:guid', asyncWrapperMiddleware(statusHandler));
     router.post('/compare', asyncWrapperMiddleware(startCompareHandler));
 
-    router.use(uploadErrorHandlerMiddleware);
-    router.use(faceXErrorHandlerMiddleware);
+    router.use(uploadErrorHandlerMiddleware, faceXErrorLoggerMiddleware, faceXErrorHandlerMiddleware);
 
     return router;
 }

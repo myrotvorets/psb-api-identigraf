@@ -1,6 +1,6 @@
 import { type Request, type Response, Router } from 'express';
 import { asyncWrapperMiddleware } from '@myrotvorets/express-async-middleware-wrapper';
-import { faceXErrorHandlerMiddleware } from '../middleware/error.mjs';
+import { faceXErrorHandlerMiddleware, faceXErrorLoggerMiddleware } from '../middleware/error.mjs';
 import type { LocalsWithContainer } from '../lib/container.mjs';
 
 interface CountResponse {
@@ -23,6 +23,6 @@ async function countHandler(
 export function countController(): Router {
     const router = Router({ strict: true, caseSensitive: true });
     router.get('/count', asyncWrapperMiddleware(countHandler));
-    router.use(faceXErrorHandlerMiddleware);
+    router.use(faceXErrorLoggerMiddleware, faceXErrorHandlerMiddleware);
     return router;
 }
