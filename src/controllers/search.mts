@@ -4,7 +4,7 @@ import { asyncWrapperMiddleware } from '@myrotvorets/express-async-middleware-wr
 import { numberParamHandler } from '@myrotvorets/express-microservice-middlewares';
 import type { MatchedFace, RecoginizedFace } from '../services/search.mjs';
 import { uploadErrorHandlerMiddleware } from '../middleware/upload.mjs';
-import { faceXErrorHandlerMiddleware } from '../middleware/error.mjs';
+import { faceXErrorHandlerMiddleware, faceXErrorLoggerMiddleware } from '../middleware/error.mjs';
 import type { LocalsWithContainer } from '../lib/container.mjs';
 
 interface StartSearchRequest {
@@ -106,8 +106,7 @@ export function searchController(): Router {
     router.get(`/search/:guid/matches/:faceid/:offset/:count`, asyncWrapperMiddleware(matchedFacesHandler));
     router.post('/search', asyncWrapperMiddleware(startSearchHandler));
 
-    router.use(uploadErrorHandlerMiddleware);
-    router.use(faceXErrorHandlerMiddleware);
+    router.use(uploadErrorHandlerMiddleware, faceXErrorLoggerMiddleware, faceXErrorHandlerMiddleware);
 
     return router;
 }
