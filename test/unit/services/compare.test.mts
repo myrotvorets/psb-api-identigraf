@@ -87,7 +87,8 @@ describe('CompareService', function () {
             getComparisonResultsMock.mock.mockImplementationOnce(() => compareStatusUnknown);
             return expect(service.status(compareGUID))
                 .to.be.eventually.rejectedWith(FaceXError)
-                .that.has.property('message', 'Unknown error');
+                .that.has.property('message')
+                .that.contain('FaceX response 0, code 3, comment: ');
         });
 
         it('should return false if the comparison is in progress', function () {
@@ -109,7 +110,8 @@ describe('CompareService', function () {
             getComparisonResultsMock.mock.mockImplementationOnce(() => compareCompletedError);
             return expect(service.status(compareGUID))
                 .to.be.eventually.rejectedWith(FaceXError)
-                .that.has.property('message', compareCompletedErrorComment);
+                .that.has.property('message')
+                .that.contain(compareCompletedErrorComment);
         });
 
         it('should succeed if everything goes well', function () {

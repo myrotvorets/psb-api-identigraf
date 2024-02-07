@@ -2,13 +2,13 @@ import { createReadStream } from 'node:fs';
 import {
     CapturedFaces,
     type Client,
-    FaceXError,
     MatchedFaces,
     SearchCompleted,
     SearchInProgress,
     type SearchStats,
     SearchUploadAck,
 } from '@myrotvorets/facex';
+import { DetailedFaceXError } from '../lib/facexerror.mjs';
 import { UploadError } from '../lib/uploaderror.mjs';
 import type { File } from './types.mjs';
 
@@ -63,7 +63,7 @@ export class SearchService {
             }
         }
 
-        throw new FaceXError(response.comment);
+        throw new DetailedFaceXError(response);
     }
 
     public async recognizedFaces(guid: string): Promise<RecoginizedFace[]> {
@@ -79,7 +79,7 @@ export class SearchService {
 
         // getCapturedFaces() may return SearchInProgress if called prematurely
 
-        throw new FaceXError(response.comment);
+        throw new DetailedFaceXError(response);
     }
 
     public async matchedFaces(guid: string, faceID: number, offset: number, count: number): Promise<MatchedFace[]> {
@@ -93,6 +93,6 @@ export class SearchService {
             return faces;
         }
 
-        throw new FaceXError(response.type === 229 ? 'Unknown error' : /* c8 ignore next */ response.comment);
+        throw new DetailedFaceXError(response);
     }
 }

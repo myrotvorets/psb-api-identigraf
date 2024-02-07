@@ -1,5 +1,6 @@
 import { createReadStream } from 'node:fs';
-import { type Client, CompareCompleted, FaceXError } from '@myrotvorets/facex';
+import { type Client, CompareCompleted } from '@myrotvorets/facex';
+import { DetailedFaceXError } from '../lib/facexerror.mjs';
 import { UploadError } from '../lib/uploaderror.mjs';
 import type { File } from './types.mjs';
 
@@ -72,7 +73,7 @@ export class CompareService {
             }
 
             if (response.isError()) {
-                throw new FaceXError(response.comment);
+                throw new DetailedFaceXError(response);
             }
 
             for (const item of response) {
@@ -82,6 +83,6 @@ export class CompareService {
             return result;
         }
 
-        throw new FaceXError('Unknown error');
+        throw new DetailedFaceXError(response);
     }
 }

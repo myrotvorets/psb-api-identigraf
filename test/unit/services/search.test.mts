@@ -43,7 +43,7 @@ describe('SearchService', function () {
 
         it('should throw UploadError on failure', function () {
             uploadPhotoForSearchMock.mock.mockImplementationOnce(() => searchUploadError);
-            return expect(service.upload(file, 30)).to.be.eventually.rejectedWith(UploadError).that.has.include({
+            return expect(service.upload(file, 30)).to.be.eventually.rejectedWith(UploadError).that.include({
                 message: searchUploadError.comment,
                 file: file.originalname,
             });
@@ -65,7 +65,8 @@ describe('SearchService', function () {
             checkSearchStatusMock.mock.mockImplementationOnce(() => searchStatusFailed);
             return expect(service.status(searchStatusFailed.serverRequestID))
                 .to.be.eventually.rejectedWith(FaceXError)
-                .that.has.property('message', searchStatusFailed.comment);
+                .that.has.property('message')
+                .that.contain(searchStatusFailed.comment);
         });
 
         it('should return stats when ready', function () {
@@ -79,7 +80,8 @@ describe('SearchService', function () {
             getCapturedFacesMock.mock.mockImplementationOnce(() => capturedFacesError);
             return expect(service.recognizedFaces(capturedFacesError.serverRequestID))
                 .to.be.eventually.rejectedWith(FaceXError)
-                .that.has.property('message', capturedFacesError.comment);
+                .that.has.property('message')
+                .that.contain(capturedFacesError.comment);
         });
 
         it('should return captured faces on success', function () {
