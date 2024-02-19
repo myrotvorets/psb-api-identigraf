@@ -55,7 +55,7 @@ export function configureApp(app: Express): Promise<ReturnType<typeof initialize
                     notFoundMiddleware,
                     cleanUploadedFilesMiddleware(),
                     uploadErrorHandlerMiddleware,
-                    errorMiddleware,
+                    errorMiddleware(),
                 );
 
                 initAsyncMetrics(container.cradle);
