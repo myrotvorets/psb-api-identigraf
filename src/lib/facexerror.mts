@@ -1,4 +1,3 @@
-import type { ErrorResponse } from '@myrotvorets/express-microservice-middlewares';
 import { FaceXError, Response } from '@myrotvorets/facex';
 
 export class DetailedFaceXError extends FaceXError {
@@ -9,13 +8,4 @@ export class DetailedFaceXError extends FaceXError {
         this.name = 'DetailedFaceXError';
         this.response = response;
     }
-}
-
-export function errorResponseFromFaceXError(e: FaceXError): ErrorResponse {
-    return {
-        success: false,
-        status: 502,
-        code: 'FACEX_ERROR',
-        message: e.message,
-    };
 }
