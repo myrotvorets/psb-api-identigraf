@@ -3,23 +3,30 @@ import { rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
-import express, { type Express } from 'express';
+import express, { type Express, type Request, type Response } from 'express';
 import { cleanUploadedFilesMiddleware } from '@myrotvorets/clean-up-after-multer';
 import { errorMiddleware, notFoundMiddleware } from '@myrotvorets/express-microservice-middlewares';
 import { installOpenApiValidator } from '@myrotvorets/oav-installer';
 import { createServer, getTracer, recordErrorToSpan } from '@myrotvorets/otel-utils';
+import {
+    type LoggerFromRequestFunction,
+    errorLoggerHook,
+    requestDurationMiddleware,
+    requestLoggerMiddleware,
+} from '@myrotvorets/express-otel-middlewares';
 
-import { initializeContainer, scopedContainerMiddleware } from './lib/container.mjs';
-import { initAsyncMetrics } from './lib/metrics.mjs';
+import { type LocalsWithContainer, initializeContainer, scopedContainerMiddleware } from './lib/container.mjs';
+import { initAsyncMetrics, requestDurationHistogram } from './lib/metrics.mjs';
 
-import { requestDurationMiddleware } from './middleware/duration.mjs';
-import { loggerMiddleware } from './middleware/logger.mjs';
 import { uploadErrorHandlerMiddleware } from './middleware/upload.mjs';
 
 import { compareController } from './controllers/compare.mjs';
 import { searchController } from './controllers/search.mjs';
 import { countController } from './controllers/count.mjs';
 import { monitoringController } from './controllers/monitoring.mjs';
+
+const loggerFromRequest: LoggerFromRequestFunction = (req: Request) =>
+    (req.res as Response<never, LocalsWithContainer> | undefined)?.locals.container.resolve('logger');
 
 export function configureApp(app: Express): Promise<ReturnType<typeof initializeContainer>> {
     return getTracer().startActiveSpan(
@@ -33,7 +40,11 @@ export function configureApp(app: Express): Promise<ReturnType<typeof initialize
                 const tempDir = await mkdtemp(join(tmpdir(), 'identigraf-'));
                 process.once('beforeExit', () => rmSync(tempDir, { force: true, recursive: true, maxRetries: 3 }));
 
-                app.use(requestDurationMiddleware, scopedContainerMiddleware, loggerMiddleware);
+                app.use(
+                    requestDurationMiddleware(requestDurationHistogram),
+                    scopedContainerMiddleware,
+                    requestLoggerMiddleware('identigraf', loggerFromRequest),
+                );
 
                 app.use('/monitoring', monitoringController());
 
@@ -55,7 +66,9 @@ export function configureApp(app: Express): Promise<ReturnType<typeof initialize
                     notFoundMiddleware,
                     cleanUploadedFilesMiddleware(),
                     uploadErrorHandlerMiddleware,
-                    errorMiddleware(),
+                    errorMiddleware({
+                        beforeSendHook: errorLoggerHook(loggerFromRequest),
+                    }),
                 );
 
                 initAsyncMetrics(container.cradle);
