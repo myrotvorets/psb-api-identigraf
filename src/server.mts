@@ -97,6 +97,6 @@ export async function run(): Promise<void> {
     const container = await configureApp(app);
     const server = await createServer(app);
     server.on('close', () => {
-        container.dispose().catch((e) => console.error(e));
+        container.dispose().catch((e: unknown) => console.error(e));
     });
 }
