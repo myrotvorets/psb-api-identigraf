@@ -42,7 +42,7 @@ describe('SearchService', function () {
         });
 
         it('should throw UploadError on failure', function () {
-            uploadPhotoForSearchMock.mock.mockImplementationOnce(() => searchUploadError);
+            uploadPhotoForSearchMock.mock.mockImplementationOnce(() => Promise.resolve(searchUploadError));
             return expect(service.upload(file, 30)).to.be.eventually.rejectedWith(UploadError).that.include({
                 message: searchUploadError.comment,
                 file: file.originalname,
@@ -50,19 +50,19 @@ describe('SearchService', function () {
         });
 
         it('should return request ID on success', function () {
-            uploadPhotoForSearchMock.mock.mockImplementationOnce(() => searchUploadAck);
+            uploadPhotoForSearchMock.mock.mockImplementationOnce(() => Promise.resolve(searchUploadAck));
             return expect(service.upload(file, 30)).to.become(searchUploadAck.serverRequestID);
         });
     });
 
     describe('#status', function () {
         it('should return false while search is in progress', function () {
-            checkSearchStatusMock.mock.mockImplementationOnce(() => searchStatusInProgress);
+            checkSearchStatusMock.mock.mockImplementationOnce(() => Promise.resolve(searchStatusInProgress));
             return expect(service.status(searchGUID)).to.become(false);
         });
 
         it('should throw FaceXError on failure', function () {
-            checkSearchStatusMock.mock.mockImplementationOnce(() => searchStatusFailed);
+            checkSearchStatusMock.mock.mockImplementationOnce(() => Promise.resolve(searchStatusFailed));
             return expect(service.status(searchStatusFailed.serverRequestID))
                 .to.be.eventually.rejectedWith(FaceXError)
                 .that.has.property('message')
@@ -70,14 +70,14 @@ describe('SearchService', function () {
         });
 
         it('should return stats when ready', function () {
-            checkSearchStatusMock.mock.mockImplementationOnce(() => searchStatusCompleted);
+            checkSearchStatusMock.mock.mockImplementationOnce(() => Promise.resolve(searchStatusCompleted));
             return expect(service.status(searchGUID)).to.become(searchStats);
         });
     });
 
     describe('#recognizedFaces', function () {
         it('should throw FaceXError on failure', function () {
-            getCapturedFacesMock.mock.mockImplementationOnce(() => capturedFacesError);
+            getCapturedFacesMock.mock.mockImplementationOnce(() => Promise.resolve(capturedFacesError));
             return expect(service.recognizedFaces(capturedFacesError.serverRequestID))
                 .to.be.eventually.rejectedWith(FaceXError)
                 .that.has.property('message')
@@ -85,21 +85,21 @@ describe('SearchService', function () {
         });
 
         it('should return captured faces on success', function () {
-            getCapturedFacesMock.mock.mockImplementationOnce(() => capturedFacesSuccess);
+            getCapturedFacesMock.mock.mockImplementationOnce(() => Promise.resolve(capturedFacesSuccess));
             return expect(service.recognizedFaces(searchGUID)).to.become(recognizedFaces);
         });
     });
 
     describe('#matchedFaces', function () {
         it('should throw FaceXError on failure', function () {
-            getMatchedFacesMock.mock.mockImplementationOnce(() => matchedFacesError);
+            getMatchedFacesMock.mock.mockImplementationOnce(() => Promise.resolve(matchedFacesError));
             return expect(
                 service.matchedFaces(matchedFacesError.serverRequestID, recognizedFaces[0]!.faceID, 0, 1),
             ).to.be.eventually.rejectedWith(FaceXError);
         });
 
         it('should return matches on success', function () {
-            getMatchedFacesMock.mock.mockImplementationOnce(() => matchedFacesSuccess);
+            getMatchedFacesMock.mock.mockImplementationOnce(() => Promise.resolve(matchedFacesSuccess));
             return expect(service.matchedFaces(searchGUID, recognizedFaces[0]!.faceID, 0, 1)).to.become(matchedFaces);
         });
     });

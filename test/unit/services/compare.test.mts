@@ -43,7 +43,7 @@ describe('CompareService', function () {
         });
 
         it('should throw an UploadError if startCompare fails on the first photo', function () {
-            startCompareMock.mock.mockImplementationOnce(() => startCompareAckError);
+            startCompareMock.mock.mockImplementationOnce(() => Promise.resolve(startCompareAckError));
 
             const files: File[] = [
                 { originalname: 'file1', buffer: Buffer.from(''), path: '' },
@@ -56,8 +56,8 @@ describe('CompareService', function () {
         });
 
         it('should throw an UploadError if startCompare fails on subsequent photos', function () {
-            startCompareMock.mock.mockImplementationOnce(() => startCompareAckSuccess);
-            uploadPhotoForComparisonMock.mock.mockImplementationOnce(() => uploadCompareAckError);
+            startCompareMock.mock.mockImplementationOnce(() => Promise.resolve(startCompareAckSuccess));
+            uploadPhotoForComparisonMock.mock.mockImplementationOnce(() => Promise.resolve(uploadCompareAckError));
 
             const files: File[] = [
                 { originalname: 'file1', buffer: Buffer.from(''), path: '' },
@@ -70,8 +70,8 @@ describe('CompareService', function () {
         });
 
         it('should succeed if everything is OK', function () {
-            startCompareMock.mock.mockImplementationOnce(() => startCompareAckSuccess);
-            uploadPhotoForComparisonMock.mock.mockImplementationOnce(() => uploadCompareAckSuccess);
+            startCompareMock.mock.mockImplementationOnce(() => Promise.resolve(startCompareAckSuccess));
+            uploadPhotoForComparisonMock.mock.mockImplementationOnce(() => Promise.resolve(uploadCompareAckSuccess));
 
             const files: File[] = [
                 { originalname: 'file1', buffer: Buffer.from(''), path: '' },
@@ -84,7 +84,7 @@ describe('CompareService', function () {
 
     describe('#status', function () {
         it('should fail on unexpected response', function () {
-            getComparisonResultsMock.mock.mockImplementationOnce(() => compareStatusUnknown);
+            getComparisonResultsMock.mock.mockImplementationOnce(() => Promise.resolve(compareStatusUnknown));
             return expect(service.status(compareGUID))
                 .to.be.eventually.rejectedWith(FaceXError)
                 .that.has.property('message')
@@ -92,22 +92,22 @@ describe('CompareService', function () {
         });
 
         it('should return false if the comparison is in progress', function () {
-            getComparisonResultsMock.mock.mockImplementationOnce(() => compareCompletedPending);
+            getComparisonResultsMock.mock.mockImplementationOnce(() => Promise.resolve(compareCompletedPending));
             return expect(service.status(compareGUID)).to.become(false);
         });
 
         it('should return null if no faces were recognized', function () {
-            getComparisonResultsMock.mock.mockImplementationOnce(() => compareCompletedNotRecognized);
+            getComparisonResultsMock.mock.mockImplementationOnce(() => Promise.resolve(compareCompletedNotRecognized));
             return expect(service.status(compareGUID)).to.become(null);
         });
 
         it('should return an empty object if there are not matches', function () {
-            getComparisonResultsMock.mock.mockImplementationOnce(() => compareCompletedNoMatches);
+            getComparisonResultsMock.mock.mockImplementationOnce(() => Promise.resolve(compareCompletedNoMatches));
             return expect(service.status(compareGUID)).to.eventually.be.an('object').that.is.empty;
         });
 
         it('should fail on other error', function () {
-            getComparisonResultsMock.mock.mockImplementationOnce(() => compareCompletedError);
+            getComparisonResultsMock.mock.mockImplementationOnce(() => Promise.resolve(compareCompletedError));
             return expect(service.status(compareGUID))
                 .to.be.eventually.rejectedWith(FaceXError)
                 .that.has.property('message')
@@ -115,7 +115,7 @@ describe('CompareService', function () {
         });
 
         it('should succeed if everything goes well', function () {
-            getComparisonResultsMock.mock.mockImplementationOnce(() => compareCompletedSuccess);
+            getComparisonResultsMock.mock.mockImplementationOnce(() => Promise.resolve(compareCompletedSuccess));
             return expect(service.status(compareGUID)).to.become(compareCompletedSuccessProcessed);
         });
     });
