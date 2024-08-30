@@ -10,6 +10,9 @@ on:
   schedule:
     - cron: "47 19 * * 3"
 
+permissions:
+  contents: read
+
 jobs:
   analyze:
     name: Analyze
@@ -46,10 +49,5 @@ jobs:
           languages: ${{ matrix.language }}
           queries: +security-and-quality
 
-      - name: Autobuild
-        uses: github/codeql-action/autobuild@4dd16135b69a43b6c8efb853346f8437d92d3c93 # v3.26.6
-
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@4dd16135b69a43b6c8efb853346f8437d92d3c93 # v3.26.6
-        with:
-          category: "/language:${{ matrix.language }}"
