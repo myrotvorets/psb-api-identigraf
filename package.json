@@ -34,7 +34,7 @@
     "@types/multer": "^1.4.12",
     "awilix": "^11.0.0",
     "envalid": "^8.0.0",
-    "express": "^4.19.2",
+    "express": "^4.21.0",
     "multer": "^1.4.5-lts.1"
   },
   "devDependencies": {
