@@ -1,3 +1,4 @@
+import type { RequestListener } from 'node:http';
 import { expect } from 'chai';
 import type { Express } from 'express';
 import request from 'supertest';
@@ -35,7 +36,7 @@ describe('uploadErrorHandlerMiddleware', function () {
         app.use('/', (_req, _res, next) => next(new Error()));
         app.use(uploadErrorHandlerMiddleware);
         app.use(errorMiddleware());
-        return request(app)
+        return request(app as RequestListener)
             .get('/')
             .expect(500)
             .expect('Content-Type', /json/u)
@@ -59,7 +60,7 @@ describe('uploadErrorHandlerMiddleware', function () {
             app.use('/', (_req, _res, next) => next(new MulterError(error)));
             app.use(uploadErrorHandlerMiddleware);
             app.use(errorMiddleware());
-            return request(app)
+            return request(app as RequestListener)
                 .get('/')
                 .expect(400)
                 .expect('Content-Type', /json/u)
