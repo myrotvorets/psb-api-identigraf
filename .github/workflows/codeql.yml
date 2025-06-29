@@ -26,6 +26,7 @@ jobs:
       matrix:
         language:
           - javascript
+          - actions
     steps:
       - name: Harden Runner
         uses: step-security/harden-runner@002fdce3c6a235733a90a27c80493a3241e56863 # v2.12.1
@@ -37,11 +38,10 @@ jobs:
             github.com:443
             uploads.github.com:443
             objects.githubusercontent.com:443
+            release-assets.githubusercontent.com:443
 
       - name: Checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-        with:
-          submodules: recursive
 
       - name: Initialize CodeQL
         uses: github/codeql-action/init@39edc492dbe16b1465b0cafca41432d857bdb31a # v3.29.1
@@ -51,3 +51,5 @@ jobs:
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@39edc492dbe16b1465b0cafca41432d857bdb31a # v3.29.1
+        with:
+          category: "/language:${{ matrix.language }}"
