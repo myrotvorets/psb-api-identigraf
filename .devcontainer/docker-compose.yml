@@ -58,7 +58,7 @@ services:
     restart: always
 
   grafana:
-    image: grafana/grafana:12.4.5@sha256:26b8f35a9e4e4431995cf64c3f396505a4faf17bcfc19f9ed84943ec6bfd5ecd
+    image: grafana/grafana:12.4.16@sha256:982fa6bf18cc38280a30bf08c3b673486067d4805b25a9d4756688a689a993c7
     depends_on:
       - victoriametrics
       - loki
